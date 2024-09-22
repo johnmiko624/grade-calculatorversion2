@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade Evaluator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-image: url('picture.jpg'); /* Replace with your image URL */
+            background-size: cover;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input[type="number"] {
+            margin-bottom: 15px;
+            padding: 10px;
+            width: calc(100% - 22px);
+            border: none;
+            border-radius: 5px;
+            background: #fff;
+            color: #000;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            font-weight: bold;
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #000;
+            padding: 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Grade Evaluator</h1>
+    <div class="container">
+        <div>
+            <label>Number of Absences:</label>
+            <input type="number" id="absences" min="0" required>
+        </div>
+        <div>
+            <label>Preliminary Exam Score (0-100):</label>
+            <input type="number" id="prelimExamScore" min="0" max="100" required>
+        </div>
+        <div>
+            <label>Quizzes Score (0-100):</label>
+            <input type="number" id="quizzesScore" min="0" max="100" required>
+        </div>
+        <div>
+            <label>Requirements Score (0-100):</label>
+            <input type="number" id="requirementsScore" min="0" max="100" required>
+        </div>
+        <div>
+            <label>Recitation Score (0-100):</label>
+            <input type="number" id="recitationScore" min="0" max="100" required>
+        </div>
+        <button onclick="calculateGrades()">Evaluate</button>
+    </div>
+
+    <div class="result" id="result"></div>
+
+    <script>
+        function calculateGrades() {
+            const absences = parseInt(document.getElementById('absences').value);
+            const prelimExamScore = parseFloat(document.getElementById('prelimExamScore').value);
+            const quizzesScore = parseFloat(document.getElementById('quizzesScore').value);
+            const requirementsScore = parseFloat(document.getElementById('requirementsScore').value);
+            const recitationScore = parseFloat(document.getElementById('recitationScore').value);
+            const resultDiv = document.getElementById('result');
+
+            if (absences >= 4) {
+                resultDiv.innerHTML = "FAILED due to excessive absences.";
+                return;
+            }
+
+            const attendanceScore = 100 - (10 * absences);
+            const classStanding = (0.4 * quizzesScore) + (0.3 * requirementsScore) + (0.3 * recitationScore);
+            const prelimGrade = (0.6 * prelimExamScore) + (0.1 * attendanceScore) + (0.3 * classStanding);
+
+            let output = `Preliminary Grade: ${prelimGrade.toFixed(2)}<br>`;
+            output += `Status: `;
+
+            if (prelimGrade < 75) {
+                output += "Passing this course will be challenging. Keep striving!";
+            } else {
+                output += "You are on track to pass!";
+            }
+
+            const requiredMidterm = (75 - (0.2 * prelimGrade)) / 0.8;
+            const requiredFinal = requiredMidterm; // Same for midterm and final
+
+            const requiredMidtermDean = (90 - (0.2 * prelimGrade)) / 0.8;
+            const requiredFinalDean = requiredMidtermDean; // Same for midterm and final
+
+            output += `<br>To pass with 75%, you need a Midterm score of ${requiredMidterm.toFixed(2)} and a Final score of ${requiredFinal.toFixed(2)}.`;
+            output += `<br>To achieve 90%, you need a Midterm score of ${requiredMidtermDean.toFixed(2)} and a Final score of ${requiredFinalDean.toFixed(2)}.`;
+
+            // Dean's List eligibility
+            if (prelimGrade >= 90) {
+                output += `<br>Congratulations! You qualify for the Dean's List!`;
+            } else if (prelimGrade < 60) {
+                output += `<br>With a Preliminary score below 60, achieving Dean's List status is impossible.`;
+            } else if (prelimGrade < 70) {
+                output += `<br>Unfortunately, you are not eligible for Dean's List.`;
+            }
+
+            // Joke for very low scores
+            if (prelimExamScore < 20) {
+                output += `<br>Joke: Why don't students ever play hide and seek? Because good luck hiding when you have grades like that!`;
+            }
+
+            resultDiv.innerHTML = output;
+        }
+    </script>
+</body>
+</html>
+
+
+
